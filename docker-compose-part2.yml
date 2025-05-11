@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  app:
+    image: ranazaeem11/my-web-app:latest
+    ports:
+      - "8081:3000"  # Changed port from 80 to 8081
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+    volumes:
+      - code-volume:/app  # Added volume for code
+    networks:
+      - app-network-part2
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-ppassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - app-network-part2
+volumes:
+  code-volume:  # Volume for code
+  db-data:
+networks:
+  app-network-part2:  # Changed network name
+    driver: bridge
